@@ -17,8 +17,8 @@ td {
     font-size: 24px;
 }
 
-td.on {
-    background-color: #0f0;
+td {
+    background-color: wheat
 }
 
 #reset-button {
