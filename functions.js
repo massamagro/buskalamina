@@ -140,6 +140,9 @@ function checkWin() {
 
 function disableBoard(){
     board.style.pointerEvents = "none";
+    board.removeEventListener("contextmenu", (e) => {
+        e.preventDefault();
+    });
 }
 
 function enableBoard(){
