@@ -1,11 +1,9 @@
-console.log("functions.js loaded");
 const reset = document.getElementById("reset-button");
 const board = document.getElementById("board");
 const title = document.getElementById("title");
 
 const columnsN = 10;
 const rowsN = columnsN;
-const bombsN = columnsN * 1.5;
 const bomb = "💣";
 const flag = "🚩";
 let cells = [];
@@ -26,7 +24,6 @@ function createBoard() {
     enableBoard();
     board.innerHTML = "";
     title.innerHTML = "buskalamina";
-    let availableBombs = bombsN;
     cells = [];
     board.innerHTML = `<table>`
     for (let i = 0; i < rowsN; i++) {
@@ -37,7 +34,6 @@ function createBoard() {
             const cell = document.createElement("td");
             cell.id = `row${i}column${j}`;
             cell.addEventListener("click", () => {
-                console.log(`Cell clicked: ${cell.id}`);
             });
             row.appendChild(cell);
             const cellObj = {
@@ -59,38 +55,16 @@ function createBoard() {
         board.appendChild(row);
 
     }
-    while (availableBombs > 0) {
-        let row = Math.floor(Math.random() * 10);
-        let column = Math.floor(Math.random() * 10);
-        const cell = cells.find(c => c.row === row && c.column === column);
-        if (!cell.isBomb) {
-            cell.isBomb = true;
-            availableBombs--;
-        }
-    }
-    cells.forEach(cell => {
-        cell.element.addEventListener("click", () => {
-            if (cell.isBomb) {
-                showBombs();
-                title.innerHTML = "you exploded";
-                disableBoard();
-            } else {
-                checkBombsAround(cell)
-            }
-            console.log(cells);
-        });
-    });
-
+    placeBombs();
+    setCellListeners();
 }
-
-
 
 function checkBombsAround(cellToCheck) {
     if (cellToCheck.isDiscovered) return;
     cellToCheck.isDiscovered = true;
       
     let anyBomb = false;
-    let bombs = 0;
+    let aroundBombs = 0;
     const aroundCells = [];
 
     const directions = [
@@ -112,14 +86,14 @@ function checkBombsAround(cellToCheck) {
     aroundCells.forEach(aroundCell => {
         if (aroundCell.isBomb) {
             anyBomb = true;
-            bombs++;
+            aroundBombs++;
 
         }
     })
 
     cellToCheck.element.style.backgroundColor = discoveredColor;
-    if (bombs > 0){
-        cellToCheck.element.innerHTML = bombs;
+    if (aroundBombs > 0){
+        cellToCheck.element.innerHTML = aroundBombs;
     } else {
             cellToCheck.element.style.backgroundColor = undiscoveredColor;
     }
@@ -133,16 +107,35 @@ function checkBombsAround(cellToCheck) {
         return;
     }  
 }
+function placeBombs() {
+    availableBombs = columnsN * 1.5;
+    while (availableBombs > 0) {
+        let row = Math.floor(Math.random() * 10);
+        let column = Math.floor(Math.random() * 10);
+        const cell = cells.find(c => c.row === row && c.column === column);
+        if (!cell.isBomb) {
+            cell.isBomb = true;
+            availableBombs--;
+        }
+    }
+}
+
+function setCellListeners() {
+    cells.forEach(cell => {
+        cell.element.addEventListener("click", () => {
+            if (cell.isBomb) {
+                showBombs();
+                title.innerHTML = "you exploded";
+                disableBoard();
+            } else {
+                checkBombsAround(cell)
+            }
+        });
+    });
+}
 
 function checkWin() {
-    let win = cells.every(cell => cell.isDiscovered || cell.isBomb);
-    console.log("cells", cells);
-    cells.forEach((cell, index) => {
-        console.log(`Cell ${index}: isDiscovered = ${cell.isDiscovered}`);
-    });
-
-    return win;
-
+    return cells.every(cell => cell.isDiscovered || cell.isBomb);
 }
 
 function disableBoard(){
@@ -159,8 +152,6 @@ function enableBoard(){
 function disableCell(cell) {
     cell.element.style.pointerEvents = "none";
 }
-            //debugging
-            cell.element.innerHTML = bomb;
 
 function enableCell(cell) {
     cell.element.style.pointerEvents = "auto";
