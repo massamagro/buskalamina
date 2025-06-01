@@ -13,9 +13,8 @@ const undiscoveredColor = "#32a852";
 const flagColor = "#f0ad4e";
 
 
-
-
 createBoard();
+
 reset.addEventListener("click", () => {
     createBoard();
 });
@@ -45,12 +44,7 @@ function createBoard() {
                 isDiscovered: false
             };
             cells.push(cellObj);
-            cell.addEventListener("contextmenu", () => {
-                if (cellObj.isDiscovered) return;
-                cellObj.isFlag = !cellObj.isFlag;
-                cell.innerHTML = cellObj.isFlag ? flag : "";
-                cell.style.backgroundColor = cellObj.isFlag ? flagColor : "";                
-            });
+            
         }
         board.appendChild(row);
 
@@ -130,6 +124,12 @@ function setCellListeners() {
             } else {
                 checkBombsAround(cell)
             }
+        });
+        cell.element.addEventListener("contextmenu", () => {
+            if (cell.isDiscovered) return;
+            cell.isFlag = !cell.isFlag;
+            cell.element.innerHTML = cell.isFlag ? flag : "";
+            cell.element.style.backgroundColor = cell.isFlag ? flagColor : "";
         });
     });
 }
