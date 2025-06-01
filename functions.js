@@ -1,7 +1,9 @@
 console.log("functions.js loaded");
 
-columnsN = 10;
-rowsN = 10;
+const columnsN = 10;
+const rowsN = 10;
+const bomb = "💣";
+const flag = "🚩";
 
 const board = document.getElementById("board");
 
@@ -21,6 +23,7 @@ for (let i = 0; i < rowsN; i++) {
         cell.addEventListener("click", () => {
             console.log(`Cell clicked: ${cell.id}`);
         });
+        cell.innerHTML = bomb;
         row.appendChild(cell);
     }
     board.appendChild(row);
