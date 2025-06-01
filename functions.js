@@ -1,14 +1,20 @@
 console.log("functions.js loaded");
 const reset = document.getElementById("reset-button");
+const board = document.getElementById("board");
+const title = document.getElementById("title");
 
 const columnsN = 10;
-const rowsN = 10;
-const bombsN = 10;
+const rowsN = columnsN;
+const bombsN = columnsN * 1.5;
 const bomb = "💣";
 const flag = "🚩";
 let cells = [];
 
-const board = document.getElementById("board");
+const discoveredColor = "#7ecc94";
+const undiscoveredColor = "#32a852";
+const flagColor = "#f0ad4e";
+
+
 
 
 createBoard();
@@ -17,7 +23,9 @@ reset.addEventListener("click", () => {
 });
 
 function createBoard() {
+    enableBoard();
     board.innerHTML = "";
+    title.innerHTML = "buskalamina";
     let availableBombs = bombsN;
     cells = [];
     board.innerHTML = `<table>`
@@ -41,6 +49,12 @@ function createBoard() {
                 isDiscovered: false
             };
             cells.push(cellObj);
+            cell.addEventListener("contextmenu", () => {
+                if (cellObj.isDiscovered) return;
+                cellObj.isFlag = !cellObj.isFlag;
+                cell.innerHTML = cellObj.isFlag ? flag : "";
+                cell.style.backgroundColor = cellObj.isFlag ? flagColor : "";                
+            });
         }
         board.appendChild(row);
 
@@ -52,14 +66,14 @@ function createBoard() {
         if (!cell.isBomb) {
             cell.isBomb = true;
             availableBombs--;
-            //debugging
-            cell.element.innerHTML = bomb;
         }
     }
     cells.forEach(cell => {
         cell.element.addEventListener("click", () => {
             if (cell.isBomb) {
-                alert("BOOM");
+                showBombs();
+                title.innerHTML = "you exploded";
+                disableBoard();
             } else {
                 checkBombsAround(cell)
             }
@@ -74,10 +88,7 @@ function createBoard() {
 function checkBombsAround(cellToCheck) {
     if (cellToCheck.isDiscovered) return;
     cellToCheck.isDiscovered = true;
-    if (checkWin()) {
-        alert("nice!");
-        return;
-    }    
+      
     let anyBomb = false;
     let bombs = 0;
     const aroundCells = [];
@@ -106,12 +117,21 @@ function checkBombsAround(cellToCheck) {
         }
     })
 
-    cellToCheck.element.style.backgroundColor = "lightgreen";
-    if (bombs > 0) cellToCheck.element.innerHTML = bombs;
+    cellToCheck.element.style.backgroundColor = discoveredColor;
+    if (bombs > 0){
+        cellToCheck.element.innerHTML = bombs;
+    } else {
+            cellToCheck.element.style.backgroundColor = undiscoveredColor;
+    }
 
     if (!anyBomb) {
         aroundCells.forEach(aroundCell => checkBombsAround(aroundCell));
     }
+    if (checkWin()) {
+        title.innerHTML = "well done";
+        disableBoard();
+        return;
+    }  
 }
 
 function checkWin() {
@@ -125,3 +145,31 @@ function checkWin() {
 
 }
 
+function disableBoard(){
+    board.style.pointerEvents = "none";
+}
+
+function enableBoard(){
+    board.style.pointerEvents = "auto";
+    board.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+    });
+}
+
+function disableCell(cell) {
+    cell.element.style.pointerEvents = "none";
+}
+            //debugging
+            cell.element.innerHTML = bomb;
+
+function enableCell(cell) {
+    cell.element.style.pointerEvents = "auto";
+}
+
+function showBombs() {
+    cells.forEach(cell => {
+        if (cell.isBomb) {
+            cell.element.innerHTML = bomb;
+        }
+    });
+}
