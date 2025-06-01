@@ -25,6 +25,6 @@ for (let i = 0; i < rowsN; i++) {
         row.appendChild(cell);
     }
     board.appendChild(row);
-    console.log(board);
+    console.log("board", board);
 }
 }
