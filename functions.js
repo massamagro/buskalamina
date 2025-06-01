@@ -21,7 +21,6 @@ for (let i = 0; i < rowsN; i++) {
         cell.addEventListener("click", () => {
             console.log(`Cell clicked: ${cell.id}`);
         });
-        
         row.appendChild(cell);
     }
     board.appendChild(row);
